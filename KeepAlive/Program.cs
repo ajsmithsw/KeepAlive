@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.NetworkInformation;
-using System.Text;
 
 namespace KeepAlive
 {
@@ -8,13 +7,9 @@ namespace KeepAlive
     {
         static void Main(string[] args)
         {
-            if (args == null)
-            {
-                Console.WriteLine("You forgot to pass in the IP to ping!");
-                return;
-            }
+            Console.Write("Enter address to ping: ");
 
-            var url = args[0];
+            var url = Console.ReadLine();
 
             new Start().Run(url);
         }
@@ -24,10 +19,7 @@ namespace KeepAlive
     {
 		public async void Run(string url)
 		{
-
-			//bool pingable = false;
 			Ping pinger = new Ping();
-			byte[] buffer = Encoding.ASCII.GetBytes(ip);
 
             while (true)
             {
@@ -37,14 +29,19 @@ namespace KeepAlive
 
                     if (reply.Status == IPStatus.Success)
                     {
-                        Console.WriteLine("");
+                        Console.WriteLine("Received from: {0}\n\ttime: {1}\n\tstatus: {2}", 
+                                          reply.Address, reply.RoundtripTime, reply.Status.ToString());
+                        System.Threading.Thread.Sleep(10000);
                     }
-
-                    //pingable = reply.Status == IPStatus.Success;
+                    else
+                    {
+                        Console.WriteLine("Problem receiving response: {0}", reply.Status.ToString());
+                        return;
+                    }
                 }
-                catch (PingException)
+                catch (PingException e)
                 {
-                    // Discard PingExceptions and return false;
+                    Console.WriteLine("Exception: {0}\n{1}", e.Message, e.StackTrace);
                 }
             }
 		}
